@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.dao.VideoDao">
+    <!--手动映射-->
+    <resultMap id="all" type="Video">
+        <!--主属性映射-->
+        <id column="id" property="id"/>
+      <result column="title" property="title"/>
+        <result column="brief" property="brief"/>
+        <!--&lt;!&ndash;关系属性是集合&ndash;&gt;-->
+       <result column="cover_Path" property="coverPath"/>
+         <result column="video_Path" property="videoPath"/>
+         <result column="create_Date" property="createDate"/>
+        <result column="group_id" property="group_id"/>
+        <!-- &lt;!&ndash;映射关系属性&ndash;&gt;-->
+         <association property="category">
+             <id column="category_id" property="id"/>
+             <result column="cate_name" property="cate_name"/>
+         </association>
+        <!--关系属性映射-->
+        <association property="user">
+            <id column="uid" property="id"/>
+            <result column="username" property="username"/>
+        </association>
+        <!--<id></id>-->
+    </resultMap>
+<select id="queryByPage" resultMap="all">
+    select video.id,title,video.brief,cover_path,video_path,create_date,category_id,user_id,category.cate_name,user.id uid,user.username from (
+        select id,title,brief,cover_path,video_path,create_date,category_id,user_id from yx_video limit #{start},#{end}) video left join yx_category category on video.category_id = category.id left join yx_user user on video.user_id=user.id
+
+</select>
+    <select id="queryPageNum" resultType="Integer">
+        select count(*) from yx_video
+    </select>
+   <insert id="add" parameterType="Video">
+        insert into yx_video(id,title,brief,cover_path,video_path,create_date,category_id)  values(#{id},#{title},#{brief},#{coverPath},#{videoPath},#{createDate} ,#{category.id} )
+    </insert>
+    <delete id="delete" parameterType="String">
+        delete from yx_video where id =#{id}
+    </delete>
+    <!--查一个User queryOne(String id);-->
+    <select id="queryOne" parameterType="String" resultType="Video">
+        select * from yx_video where id = #{id}
+    </select>
+</mapper>
